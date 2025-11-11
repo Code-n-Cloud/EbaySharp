@@ -1,21 +1,21 @@
 # EbaySharp: A .NET wrapper library for eBay REST API.
 
-[![NuGet](https://img.shields.io/nuget/v/CMS365.EbaySharp.svg?logo=nuget)](https://www.nuget.org/packages/CMS365.EbaySharp/)
-![NuGet Downloads](https://img.shields.io/nuget/dt/CMS365.EbaySharp)
-![GitHub last commit (main)](https://img.shields.io/github/last-commit/CMS365-PTY-LTD/EbaySharp/main.svg?logo=github)
+[![NuGet](https://img.shields.io/nuget/v/Code-n-Cloud.EbaySharp.svg?logo=nuget)](https://www.nuget.org/packages/Code-n-Cloud.EbaySharp/)
+![NuGet Downloads](https://img.shields.io/nuget/dt/Code-n-Cloud.EbaySharp)
+![GitHub last commit (main)](https://img.shields.io/github/last-commit/Code-n-Cloud/EbaySharp/main.svg?logo=github)
 [![Build status](https://img.shields.io/azure-devops/build/cms-365/EbaySharp/9.svg?logo=azuredevops)](https://cms-365.visualstudio.com/EbaySharp/_build?definitionID=9)
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
-![GitHub Stars](https://img.shields.io/github/stars/CMS365-PTY-LTD/EbaySharp?style=social)
+![GitHub Stars](https://img.shields.io/github/stars/Code-n-Cloud/EbaySharp?style=social)
 
 EbaySharp is a .NET library that enables you to authenticate and make REST API calls to eBay. This .NET SDK used for creating listings and managing orders using C#.
 
 # Installation
 
-EbaySharp is [available on NuGet](https://www.nuget.org/packages/CMS365.EbaySharp/). Use the package manager
+EbaySharp is [available on NuGet](https://www.nuget.org/packages/Code-n-Cloud.EbaySharp/). Use the package manager
 console in Visual Studio to install it:
 
 ```pwsh
-Install-Package CMS365.EbaySharp
+Install-Package Code-n-Cloud.EbaySharp
 ```
 
 # API support
@@ -124,20 +124,20 @@ EbaySharp currently supports the following Ebay REST APIs:
 
 Create an account here https://developer.ebay.com/my/keys and generate keys for production.
 
-For example: ![alt text](https://github.com/CMS365-PTY-LTD/EbaySharp/blob/main/EbaySharp/Screenshots/keys.png?raw=true)
+For example: ![alt text](https://github.com/Code-n-Cloud/EbaySharp/blob/main/EbaySharp/Screenshots/keys.png?raw=true)
 
 Navigate to user tokens https://developer.ebay.com/my/auth/?env=production&index=0 and select following options.
 
-![alt text](https://github.com/CMS365-PTY-LTD/EbaySharp/blob/main/EbaySharp/Screenshots/user_token.png?raw=true)
+![alt text](https://github.com/Code-n-Cloud/EbaySharp/blob/main/EbaySharp/Screenshots/user_token.png?raw=true)
 
 From the same page, generate the ebay redirect URL (called RU)
 
-![alt text](https://github.com/CMS365-PTY-LTD/EbaySharp/blob/main/EbaySharp/Screenshots/ru.png?raw=true)
+![alt text](https://github.com/Code-n-Cloud/EbaySharp/blob/main/EbaySharp/Screenshots/ru.png?raw=true)
 
 Copy the URL of the field "Your branded eBay Production Sign In (OAuth)" and open in a new browser in private mode and also save a copy of the URL for future use.
 Log in with your store user ID and password and you will be redirected to the following page
 
-![alt text](https://github.com/CMS365-PTY-LTD/EbaySharp/blob/main/EbaySharp/Screenshots/consent.png?raw=true)
+![alt text](https://github.com/Code-n-Cloud/EbaySharp/blob/main/EbaySharp/Screenshots/consent.png?raw=true)
 
 Copy the URL of the thank you page and assign it to a variable called "secureURL" and execute the following function.
 ```C#
@@ -540,15 +540,15 @@ EbaySharp.Entities.Sell.Inventory.InventoryItem.InventoryItem inventoryItem = ne
 CreatedOrReplacedInventoryItem createdOrReplacedInventoryItem = await ebayController.CreateOrReplaceInventoryItem(UNIQUE SKU OF THE PRODUCT, inventoryItem);
 ```
 2 - Create a new offer
-You can see detail [here](https://github.com/CMS365-PTY-LTD/EbaySharp?tab=readme-ov-file#create-offer) 
+You can see detail [here](https://github.com/Code-n-Cloud/EbaySharp?tab=readme-ov-file#create-offer) 
 
 3 - Publish offer
-You can see detail [here](https://github.com/CMS365-PTY-LTD/EbaySharp?tab=readme-ov-file#publish-offer)
+You can see detail [here](https://github.com/Code-n-Cloud/EbaySharp?tab=readme-ov-file#publish-offer)
 #### Revise a listing
 If you want to revise a listing, you will need to perform following 4 steps.
 
 1 - Get an existing inventory item you want to revise
-You can see detail [here](https://github.com/CMS365-PTY-LTD/EbaySharp?tab=readme-ov-file#get-inventory-item)
+You can see detail [here](https://github.com/Code-n-Cloud/EbaySharp?tab=readme-ov-file#get-inventory-item)
 2 - Get an existing offer
 ```C3
 Offers offers = await ebayController.GetOffers(product.SKU);
@@ -572,7 +572,7 @@ OfferPublished offerPublished = await ebayController.PublishOffer(offer.OfferId,
 If you want to update an existing active listing, you will need to perform following 3 steps.
 
 1 - Get an existing inventory item you want to update
-You can see detail [here](https://github.com/CMS365-PTY-LTD/EbaySharp?tab=readme-ov-file#get-inventory-item)
+You can see detail [here](https://github.com/Code-n-Cloud/EbaySharp?tab=readme-ov-file#get-inventory-item)
 2 - Get an existing offer
 ```C3
 Offers offers = await ebayController.GetOffers(product.SKU);
@@ -725,7 +725,7 @@ while (hasMoreResults)
 }
 ```
 #### GetAccount
-This is a legacy XML call and you should be considering [Finances API](#finances) as a recommended approach and please read [Issue](https://github.com/CMS365-PTY-LTD/EbaySharp/issues/19) for more detail.
+This is a legacy XML call and you should be considering [Finances API](#finances) as a recommended approach and please read [Issue](https://github.com/Code-n-Cloud/EbaySharp/issues/19) for more detail.
 
 This method is used to get account information which contains transactions, payouts and invoice related data. You can find more detail [here](https://developer.ebay.com/devzone/xml/docs/reference/ebay/GetAccount.html)
 ```C#
