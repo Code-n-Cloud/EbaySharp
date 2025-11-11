@@ -237,7 +237,7 @@ namespace EbaySharp.Tests
             {
 
                 string SKU = "AWN-B-ARM-REMOTE-25X20-GREY";
-                string merchantLocationKey = "au_vic";
+                string merchantLocationKey = "au_bug1";
 
                 InventoryLocations inventoryLocations = await ebayController.GetInventoryLocations(200, 0);
 
@@ -246,20 +246,26 @@ namespace EbaySharp.Tests
                 //    await ebayController.DeleteInventoryLocation(inventoryLocationItem.MerchantLocationKey);
                 //}
 
-                //await ebayController.CreateInventoryLocation(new InventoryLocation()
-                //{
-                //    MerchantLocationKey = merchantLocationKey,
-                //    LocationTypes = new List<StoreTypeEnum>() { StoreTypeEnum.WAREHOUSE },
-                //    MerchantLocationStatus = StatusEnum.ENABLED,
-                //    Location = new Location()
-                //    {
-                //        Address = new Address()
-                //        {
-                //            PostalCode = "3698",
-                //            Country = CountryCodeEnum.AU
-                //        }
-                //    }
-                //});
+                await ebayController.CreateInventoryLocation(new InventoryLocation()
+                {
+                    MerchantLocationKey = merchantLocationKey,
+                    LocationTypes = new List<StoreTypeEnum>() { StoreTypeEnum.WAREHOUSE },
+                    MerchantLocationStatus = StatusEnum.ENABLED,
+                    Location = new Location()
+                    {
+                        Address = new Address()
+                        {
+                            PostalCode = "3698",
+                            Country = CountryCodeEnum.AU,
+                            City = "Melbourne",
+                        },
+                        GeoCoordinates = new GeoCoordinates()
+                        {
+                            Latitude = -37.0000,
+                            Longitude = 145.0000
+                        }
+                    }
+                });
                 InventoryLocation inventoryLocation = await ebayController.GetInventoryLocation(merchantLocationKey);
 
 

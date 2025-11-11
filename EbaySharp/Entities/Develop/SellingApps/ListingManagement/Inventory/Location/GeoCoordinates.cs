@@ -2,7 +2,7 @@
 {
     public class GeoCoordinates
     {
-        public string Latitude { get; set; }
-        public string Longitude { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
     }
 }
