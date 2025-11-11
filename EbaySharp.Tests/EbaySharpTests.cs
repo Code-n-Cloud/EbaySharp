@@ -257,12 +257,6 @@ namespace EbaySharp.Tests
                         {
                             PostalCode = "3698",
                             Country = CountryCodeEnum.AU,
-                            City = "Melbourne",
-                        },
-                        GeoCoordinates = new GeoCoordinates()
-                        {
-                            Latitude = -37.0000,
-                            Longitude = 145.0000
                         }
                     }
                 });
