@@ -4,7 +4,7 @@ namespace EbaySharp.Entities.Develop.SellingApps.ListingManagement.Inventory.Off
 {
     public class Offer
     {
-        public int AvailableQuantity { get; set; }
+        public int? AvailableQuantity { get; set; }
         public string CategoryId { get; set; }
         public Charity Charity { get; set; }
         public ExtendedProducerResponsibility ExtendedProducerResponsibility { get; set; }

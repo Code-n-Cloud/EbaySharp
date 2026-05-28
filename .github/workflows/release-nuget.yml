@@ -1,0 +1,66 @@
+name: Publish NuGet package
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Compute release version
+        id: version
+        shell: pwsh
+        run: |
+          [xml]$project = Get-Content 'EbaySharp/EbaySharp.csproj'
+          $packageId = $project.Project.PropertyGroup.PackageID
+
+          function Parse-Version([string]$version) {
+            if ($version -notmatch '^(\d+)\.(\d+)\.(\d+)$') {
+              throw "Unsupported version format: $version"
+            }
+
+            return [pscustomobject]@{
+              Major = [int]$matches[1]
+              Minor = [int]$matches[2]
+              Patch = [int]$matches[3]
+            }
+          }
+
+          $response = Invoke-RestMethod -Uri "https://api.nuget.org/v3-flatcontainer/$($packageId.ToLowerInvariant())/index.json"
+          $stableVersions = @($response.versions | Where-Object { $_ -match '^\d+\.\d+\.\d+$' })
+
+          if ($stableVersions.Count -eq 0) {
+            throw "No published stable package found for $packageId."
+          }
+
+          $latestVersion = Parse-Version $stableVersions[-1]
+          $releaseVersion = "$($latestVersion.Major).$($latestVersion.Minor).$($latestVersion.Patch + 1)"
+
+          "package_version=$releaseVersion" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Pack
+        run: dotnet pack EbaySharp/EbaySharp.csproj --configuration Release --no-build -p:PackageVersion=${{ steps.version.outputs.package_version }} --output ./artifacts
+
+      - name: Publish to NuGet.org
+        run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
