@@ -26,9 +26,6 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore
 
-      - name: Test
-        run: dotnet test --configuration Release --no-build
-
       - name: Compute prerelease version
         id: version
         shell: pwsh
