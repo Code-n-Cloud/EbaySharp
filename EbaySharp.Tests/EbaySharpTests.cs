@@ -116,7 +116,7 @@ namespace EbaySharp.Tests
                     SchemaVersion = "1.0",
                     FeedType = "LMS_ACTIVE_INVENTORY_REPORT",
                 });
-                Assert.That(true, Is.True); // If no exception is thrown, the test passes
+                Assert.Pass();
             }
             catch (Exception ex)
             {
