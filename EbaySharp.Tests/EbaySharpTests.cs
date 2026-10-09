@@ -236,7 +236,7 @@ namespace EbaySharp.Tests
             try
             {
 
-                string SKU = "AWN-B-ARM-REMOTE-25X20-GREY";
+                string SKU = "AFB-EGG-60";
                 string merchantLocationKey = "au_bug1";
 
                 InventoryLocations inventoryLocations = await ebayController.GetInventoryLocations(200, 0);
@@ -246,33 +246,33 @@ namespace EbaySharp.Tests
                 //    await ebayController.DeleteInventoryLocation(inventoryLocationItem.MerchantLocationKey);
                 //}
 
-                await ebayController.CreateInventoryLocation(new InventoryLocation()
-                {
-                    MerchantLocationKey = merchantLocationKey,
-                    LocationTypes = new List<StoreTypeEnum>() { StoreTypeEnum.WAREHOUSE },
-                    MerchantLocationStatus = StatusEnum.ENABLED,
-                    Location = new Location()
-                    {
-                        Address = new Address()
-                        {
-                            PostalCode = "3698",
-                            Country = CountryCodeEnum.AU,
-                        }
-                    }
-                });
-                InventoryLocation inventoryLocation = await ebayController.GetInventoryLocation(merchantLocationKey);
+                //await ebayController.CreateInventoryLocation(new InventoryLocation()
+                //{
+                //    MerchantLocationKey = merchantLocationKey,
+                //    LocationTypes = new List<StoreTypeEnum>() { StoreTypeEnum.WAREHOUSE },
+                //    MerchantLocationStatus = StatusEnum.ENABLED,
+                //    Location = new Location()
+                //    {
+                //        Address = new Address()
+                //        {
+                //            PostalCode = "3698",
+                //            Country = CountryCodeEnum.AU,
+                //        }
+                //    }
+                //});
+                //InventoryLocation inventoryLocation = await ebayController.GetInventoryLocation(merchantLocationKey);
 
 
-                InventoryItems inventoryItems = await ebayController.GetInventoryItems(200, 0);
+                //InventoryItems inventoryItems = await ebayController.GetInventoryItems(200, 0);
 
-                Dictionary<string, string[]> aspects = new()
-                {
-                    { "Brand", new[] { "GoPro" } },
-                    { "Type", new[] { "Helmet/Action" } },
-                    { "Set Includes", new[] { "See description" } },
-                    { "Number of Items in Set", new[] { "See description" } }
+                //Dictionary<string, string[]> aspects = new()
+                //{
+                //    { "Brand", new[] { "GoPro" } },
+                //    { "Type", new[] { "Helmet/Action" } },
+                //    { "Set Includes", new[] { "See description" } },
+                //    { "Number of Items in Set", new[] { "See description" } }
 
-                };
+                //};
                 //https://developer.ebay.com/api-docs/static/rest-request-components.html#marketpl
                 //await ebayController.CreateOrReplaceInventoryItem(SKU, new InventoryItem()
                 //{
@@ -330,7 +330,7 @@ namespace EbaySharp.Tests
                 var offer = (await ebayController.GetOffers(SKU)).OfferList.First();
                 offer = await ebayController.GetOffer(offer.OfferId);
                 //offer.PricingSummary.Price.Value = "100";
-                //await ebayController.UpdateOffer(offer.OfferId, offer, "en-AU");
+                var offerUpdated = await ebayController.UpdateOffer(offer.OfferId, offer, "en-AU");
                 //Assert.That(offer.Status == OfferStatusEnum.UNPUBLISHED, Is.True);
                 //OfferPublished offerPublished = await ebayController.PublishOffer(offer.OfferId, "en-AU");
                 Assert.That(offer.Status == OfferStatusEnum.PUBLISHED, Is.True);
