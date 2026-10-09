@@ -227,9 +227,9 @@ namespace EbaySharp.Controllers
         {
             return await new InventoryController(accessToken).CreateOffer(offer, locale);
         }
-        public async Task UpdateOffer(string offerId, Offer offer, string locale)
+        public async Task<OfferUpdated> UpdateOffer(string offerId, Offer offer, string locale)
         {
-            await new InventoryController(accessToken).UpdateOffer(offerId, offer, locale);
+            return await new InventoryController(accessToken).UpdateOffer(offerId, offer, locale);
         }
         public async Task<OfferPublished> PublishOffer(string offerId, string locale)
         {
