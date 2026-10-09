@@ -6,7 +6,6 @@
     <ApplicationIcon>EbaySharp_ico.ico</ApplicationIcon>
     <PackageID>Code-n-Cloud.EbaySharp</PackageID>
     <Title>EbaySharp</Title>
-    <Version>9.0.3</Version>
     <Authors>Shafaqat Ali</Authors>
     <Company>Code &amp; Cloud</Company>
     <Description>EbaySharp is a .NET library that enables you to authenticate and make REST API
