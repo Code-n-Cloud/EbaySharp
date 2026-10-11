@@ -670,6 +670,20 @@ You can find more detail [here](https://developer.ebay.com/api-docs/sell/invento
 EbaySharp.Controllers.EbayController ebayController = new EbaySharp.Controllers.EbayController(clientCredentials.AccessToken);
 OfferPublished offerPublished = await ebayController.PublishOffer(offerId, "en-AU");
 ```
+
+The offer responses (`OfferPublished`, `OfferUpdated`, `OfferCreated`) expose both `Warnings` and `Errors`.
+When eBay rejects the request - for example a picture that does not meet the picture policy - the call no
+longer throws; it returns the response with `Errors` populated so you can inspect and log the details.
+
+```C#
+if (offerPublished.Errors != null && offerPublished.Errors.Length > 0)
+{
+    foreach (Error error in offerPublished.Errors)
+    {
+        Console.WriteLine($"Publish failed ({error.ErrorId}): {error.Message}");
+    }
+}
+```
 #### Withdraw offer
 You can find more detail [here](https://developer.ebay.com/api-docs/sell/inventory/resources/offer/methods/withdrawOffer)
 

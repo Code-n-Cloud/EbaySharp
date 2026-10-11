@@ -236,8 +236,8 @@ namespace EbaySharp.Tests
             try
             {
 
-                string SKU = "AFB-EGG-60";
-                string merchantLocationKey = "au_bug1";
+                string SKU = "MMT-ADB-PX";
+                string merchantLocationKey = "au_vic";
 
                 InventoryLocations inventoryLocations = await ebayController.GetInventoryLocations(200, 0);
 
@@ -328,11 +328,11 @@ namespace EbaySharp.Tests
                 //OfferCreated offerCreated = await ebayController.CreateOffer(offer, "en-AU");
 
                 var offer = (await ebayController.GetOffers(SKU)).OfferList.First();
-                offer = await ebayController.GetOffer(offer.OfferId);
+                //offer = await ebayController.GetOffer(offer.OfferId);
                 //offer.PricingSummary.Price.Value = "100";
                 var offerUpdated = await ebayController.UpdateOffer(offer.OfferId, offer, "en-AU");
                 //Assert.That(offer.Status == OfferStatusEnum.UNPUBLISHED, Is.True);
-                //OfferPublished offerPublished = await ebayController.PublishOffer(offer.OfferId, "en-AU");
+                OfferPublished offerPublished = await ebayController.PublishOffer(offer.OfferId, "en-AU");
                 Assert.That(offer.Status == OfferStatusEnum.PUBLISHED, Is.True);
 
                 //await ebayController.WithdrawOffer(offer.OfferId);

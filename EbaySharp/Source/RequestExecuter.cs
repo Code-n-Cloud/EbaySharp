@@ -84,15 +84,26 @@ namespace EbaySharp.Source
                 throw new Exception(responseContent);
             }
         }
-        private async Task<T> executePostRequest<T>(string requestUrl, string authenticationHeaderValue, List<KeyValuePair<string, string>> keyValuePayload, string JSONPayload, string contentLanguage)
+        // Sends a request and returns the body deserialized into T. It never throws: both success bodies
+        // and error bodies (which carry eBay's warnings/errors) are returned on the object, and an empty
+        // or non-JSON body yields default(T).
+        private async Task<T> executeJsonRequest<T>(HttpMethod httpMethod, string requestUrl, string authenticationHeaderValue,
+            string contentLanguage, List<KeyValuePair<string, string>> keyValuePayload, string JSONPayload)
         {
-            HttpResponseMessage response = await executeRequest(HttpMethod.Post, requestUrl, authenticationHeaderValue, contentLanguage, keyValuePayload, JSONPayload, null);
+            HttpResponseMessage response = await executeRequest(httpMethod, requestUrl, authenticationHeaderValue, contentLanguage, keyValuePayload, JSONPayload, null);
             string responseContent = await response.Content.ReadAsStringAsync();
-            if (response.IsSuccessStatusCode)
+            if (string.IsNullOrEmpty(responseContent))
+            {
+                return default(T);
+            }
+            try
             {
                 return responseContent.DeserializeToObject<T>();
             }
-            throw new Exception((new { error = responseContent.DeserializeToObject<object>(), payload = JSONPayload?.DeserializeToObject<object>() }).SerializeToJson());
+            catch (JsonException)
+            {
+                return default(T);
+            }
         }
         private async Task<T> executeLegacyPostRequest<T>(int siteId, string callName, string payload, int compatibilityLevel, SigningKey signingKey)
         {
@@ -119,28 +130,13 @@ namespace EbaySharp.Source
             }
             return type;
         }
-        //private async Task executePostRequest(string requestUrl, string authenticationHeaderValue, List<KeyValuePair<string, string>> keyValuePayload, string JSONPayload, string contentLanguage)
-        //{
-        //    HttpResponseMessage response = await executeRequest(HttpMethod.Post, requestUrl, authenticationHeaderValue, contentLanguage, keyValuePayload, JSONPayload);
-        //    string responseContent = await response.Content.ReadAsStringAsync();
-        //    if (response.IsSuccessStatusCode==false)
-        //    {
-        //        throw new Exception(responseContent);
-        //    }
-        //}
         public async Task<T> ExecutePutRequest<T>(string requestUrl, string authenticationHeaderValue, string JSONPayload, string contentLanguage)
         {
-            HttpResponseMessage response = await executeRequest(HttpMethod.Put, requestUrl, authenticationHeaderValue, contentLanguage, null, JSONPayload, null);
-            string responseContent = await response.Content.ReadAsStringAsync();
-            if (response.IsSuccessStatusCode)
-            {
-                return string.IsNullOrEmpty(responseContent) == true ? default(T) : responseContent.DeserializeToObject<T>();
-            }
-            throw new Exception((new { error = responseContent.DeserializeToObject<object>(), payload = JSONPayload.DeserializeToObject<object>() }).SerializeToJson());
+            return await executeJsonRequest<T>(HttpMethod.Put, requestUrl, authenticationHeaderValue, contentLanguage, null, JSONPayload);
         }
         public async Task<T> ExecutePostRequest<T>(string requestUrl, string authenticationHeaderValue, List<KeyValuePair<string, string>> keyValuePayload)
         {
-            return await executePostRequest<T>(requestUrl, authenticationHeaderValue, keyValuePayload, null, null);
+            return await executeJsonRequest<T>(HttpMethod.Post, requestUrl, authenticationHeaderValue, null, keyValuePayload, null);
         }
         public async Task<T> ExecuteLegacyPostRequest<T>(int siteId, string callName, string payload, int compatibilityLevel, SigningKey signingKey)
         {
@@ -148,20 +144,17 @@ namespace EbaySharp.Source
         }
         public async Task<T> ExecutePostRequest<T>(string requestUrl, string authenticationHeaderValue, string JSONPayload, string contentLanguage)
         {
-            return await executePostRequest<T>(requestUrl, authenticationHeaderValue, null, JSONPayload, contentLanguage);
+            return await executeJsonRequest<T>(HttpMethod.Post, requestUrl, authenticationHeaderValue, contentLanguage, null, JSONPayload);
         }
         public async Task ExecutePostRequest(string requestUrl, string authenticationHeaderValue, string JSONPayload, string contentLanguage)
         {
-            HttpResponseMessage response = await executeRequest(HttpMethod.Post, requestUrl, authenticationHeaderValue, contentLanguage, null, JSONPayload, null);
-            string responseContent = await response.Content.ReadAsStringAsync();
-            if (response.IsSuccessStatusCode == false)
-            {
-                throw new Exception((new { error = responseContent, payload = JSONPayload.DeserializeToObject<object>() }).SerializeToJson());
-            }
+            // No response object to return, so a failed request is not surfaced here; use the generic
+            // ExecutePostRequest<T> when warnings/errors need to be inspected.
+            await ExecutePostRequest<object>(requestUrl, authenticationHeaderValue, JSONPayload, contentLanguage);
         }
         public async Task<T> ExecutePostRequest<T>(string requestUrl, string authenticationHeaderValue, string JSONPayload)
         {
-            return await executePostRequest<T>(requestUrl, authenticationHeaderValue, null, JSONPayload, null);
+            return await ExecutePostRequest<T>(requestUrl, authenticationHeaderValue, JSONPayload, null);
         }
         public async Task ExecutePostRequest(string requestUrl, string authenticationHeaderValue, string JSONPayload)
         {
