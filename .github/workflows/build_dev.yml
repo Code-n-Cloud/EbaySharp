@@ -3,29 +3,20 @@ name: Build DEV
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [dev]
 
 jobs:
-  build_and_test:
+  build:
     name: "Build"
     runs-on: windows-latest
     environment: DEV
-    env:
-      CLIENT_ID: ${{ secrets.CLIENT_ID }}
-      CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
-      REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
-    # env:
-    #   SLN_FILE: "/home/runner/work/EbaySharp/EbaySharp/EbaySharp.sln"
-    
-    
+
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 9.0.x
-    # - name: Verify solution Path
-    #   run: ls -la $SLN_FILE
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
