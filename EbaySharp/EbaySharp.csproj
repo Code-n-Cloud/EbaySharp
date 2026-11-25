@@ -66,4 +66,8 @@
     <PackageReference Include="SharpZipLib" Version="1.4.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="EbaySharp.Tests" />
+  </ItemGroup>
+
 </Project>
