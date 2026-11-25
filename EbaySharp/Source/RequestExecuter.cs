@@ -9,10 +9,21 @@ namespace EbaySharp.Source
 {
     internal class RequestExecuter
     {
+        private readonly HttpMessageHandler httpMessageHandler;
+
+        public RequestExecuter()
+        {
+        }
+
+        internal RequestExecuter(HttpMessageHandler httpMessageHandler)
+        {
+            this.httpMessageHandler = httpMessageHandler;
+        }
+
         private async Task<HttpResponseMessage> executeRequest(HttpMethod httpMethod, string requestUrl, string authenticationHeaderValue, string contentLanguageHeaderValue,
             List<KeyValuePair<string, string>> keyValuePayload, string JSONPayload, SigningKey signingKey)
         {
-            var client = new HttpClient();
+            var client = httpMessageHandler == null ? new HttpClient() : new HttpClient(httpMessageHandler, disposeHandler: false);
             var request = new HttpRequestMessage(httpMethod, requestUrl);
             request.Headers.Add("Authorization", authenticationHeaderValue);
 
@@ -69,11 +80,15 @@ namespace EbaySharp.Source
                 }
                 return responseContent.DeserializeToObject<T>();
             }
-            else if (string.IsNullOrEmpty(responseContent))
+            throw new Exception(GetErrorContent(response, responseContent));
+        }
+        private static string GetErrorContent(HttpResponseMessage response, string responseContent)
+        {
+            if (string.IsNullOrEmpty(responseContent))
             {
-                responseContent = JsonSerializer.Serialize(new { Reason = response.ReasonPhrase, StatusCode = response.StatusCode });
+                return JsonSerializer.Serialize(new { Reason = response.ReasonPhrase, StatusCode = response.StatusCode });
             }
-            throw new Exception(responseContent);
+            return responseContent;
         }
         public async Task ExecuteDeleteRequest(string requestUrl, string authenticationHeaderValue)
         {
@@ -86,24 +101,42 @@ namespace EbaySharp.Source
         }
         // Sends a request and returns the body deserialized into T. It never throws: both success bodies
         // and error bodies (which carry eBay's warnings/errors) are returned on the object, and an empty
-        // or non-JSON body yields default(T).
+        // or non-JSON body yields default(T). With throwOnError the failures are surfaced instead, so the
+        // caller sees eBay's actual error (e.g. invalid_grant / invalid_scope from the token endpoint).
         private async Task<T> executeJsonRequest<T>(HttpMethod httpMethod, string requestUrl, string authenticationHeaderValue,
-            string contentLanguage, List<KeyValuePair<string, string>> keyValuePayload, string JSONPayload)
+            string contentLanguage, List<KeyValuePair<string, string>> keyValuePayload, string JSONPayload, bool throwOnError = false)
         {
             HttpResponseMessage response = await executeRequest(httpMethod, requestUrl, authenticationHeaderValue, contentLanguage, keyValuePayload, JSONPayload, null);
             string responseContent = await response.Content.ReadAsStringAsync();
+
+            if (throwOnError && response.IsSuccessStatusCode == false)
+            {
+                throw new Exception(GetErrorContent(response, responseContent));
+            }
             if (string.IsNullOrEmpty(responseContent))
             {
+                if (throwOnError)
+                {
+                    throw new Exception("No content found.");
+                }
                 return default(T);
             }
             try
             {
                 return responseContent.DeserializeToObject<T>();
             }
-            catch (JsonException)
+            catch (JsonException ex)
             {
+                if (throwOnError)
+                {
+                    throw new Exception($"Failed to deserialize the eBay response: {responseContent}", ex);
+                }
                 return default(T);
             }
+        }
+        internal async Task<T> ExecutePostRequestWithErrorChecking<T>(string requestUrl, string authenticationHeaderValue, List<KeyValuePair<string, string>> keyValuePayload)
+        {
+            return await executeJsonRequest<T>(HttpMethod.Post, requestUrl, authenticationHeaderValue, null, keyValuePayload, null, throwOnError: true);
         }
         private async Task<T> executeLegacyPostRequest<T>(int siteId, string callName, string payload, int compatibilityLevel, SigningKey signingKey)
         {
